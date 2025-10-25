@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Phantom Statistics</title>
+      <link
+         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+         rel="stylesheet"
+      />
+      <script src="https://unpkg.com/lucide@latest"></script>
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+      <style>
+         :root {
+            --color-gray-50: #f9fafb;
+            --color-gray-100: #f3f4f6;
+            --color-gray-200: #e5e7eb;
+            --color-gray-300: #d1d5db;
+            --color-gray-400: #9ca3af;
+            --color-gray-500: #6b7280;
+            --color-gray-600: #4b5563;
+            --color-gray-700: #374151;
+            --color-gray-800: #1f2937;
+            --color-gray-900: #111827;
+            --color-black: #000000;
+            --color-white: #ffffff;
+         }
+
+         * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+         }
+
+         body {
+            font-family: "Inter", sans-serif;
+            font-weight: 300;
+            background: linear-gradient(
+               135deg,
+               var(--color-white) 0%,
+               var(--color-gray-50) 50%,
+               var(--color-gray-100) 100%
+            );
+            color: var(--color-black);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+         }
+
+         nav {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--color-gray-200);
+            backdrop-filter: blur(12px);
+            background-color: rgba(255, 255, 255, 0.7);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+         }
+
+         @media (min-width: 1024px) {
+            nav {
+               padding: 1rem 3rem;
+            }
+         }
+
+         .nav-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            background: linear-gradient(to right, var(--color-black), var(--color-gray-700));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+         }
+
+         .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.875rem;
+         }
+
+         @media (min-width: 1024px) {
+            .nav-links {
+               gap: 2rem;
+               font-size: 1rem;
+            }
+         }
+
+         .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+            color: var(--color-gray-600);
+            text-decoration: none;
+            padding: 0.5rem 0;
+            position: relative;
+         }
+
+         .nav-link:hover {
+            color: var(--color-gray-900);
+         }
+
+         .nav-link.active {
+            color: var(--color-black);
+            font-weight: 500;
+         }
+
+         .nav-link.active::after {
+            content: "";
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(to right, var(--color-black), var(--color-gray-700));
+            border-radius: 2px;
+         }
+
+         main {
+            margin-left: auto;
+            margin-right: auto;
+            width: 92%;
+            max-width: 72rem;
+            padding: 2.5rem 0;
+         }
+
+         @media (min-width: 1024px) {
+            main {
+               padding: 3.5rem 0;
+            }
+         }
+
+         header {
+            position: relative;
+            text-align: center;
+            margin-bottom: 3.5rem;
+         }
+
+         h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            background: linear-gradient(to right, var(--color-black), var(--color-gray-700));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: fadeIn 0.8s ease-out;
+            margin-bottom: 0.5rem;
+         }
+
+         @media (min-width: 1024px) {
+            h1 {
+               font-size: 3.75rem;
+            }
+         }
+
+         .subtitle {
+            color: var(--color-gray-500);
+            animation: fadeIn 0.9s 0.1s ease-out both;
+         }
+
+         section {
+            position: relative;
+         }
+
+         .grid-bg {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background-image: repeating-linear-gradient(
+                  0deg,
+                  rgba(0, 0, 0, 0.03) 0 1px,
+                  transparent 1px 40px
+               ),
+               repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.03) 0 1px, transparent 1px 40px);
+            mask-image: radial-gradient(
+               ellipse at center,
+               rgba(255, 255, 255, 1) 45%,
+               rgba(255, 255, 255, 0) 100%
+            );
+         }
+
+         .stats-grid {
+            position: relative;
+            display: grid;
+            gap: 1.5rem;
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+         }
+
+         @media (min-width: 640px) {
+            .stats-grid {
+               grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+         }
+
+         @media (min-width: 1024px) {
+            .stats-grid {
+               grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+         }
+
+         .stat-card {
+            border-radius: 1.25rem;
+            border: 1px solid var(--color-gray-200);
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            background-color: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.6s ease-out both;
+            position: relative;
+            overflow: hidden;
+         }
+
+         .stat-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(to right, transparent, rgba(0, 0, 0, 0.05), transparent);
+         }
+
+         .stat-card:hover {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            transform: translateY(-5px);
+            border-color: var(--color-gray-300);
+            background-color: rgba(255, 255, 255, 0.9);
+         }
+
+         .stat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+         }
+
+         .stat-title {
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--color-gray-500);
+            font-weight: 500;
+         }
+
+         .stat-icon {
+            width: 1.5rem;
+            height: 1.5rem;
+            color: var(--color-gray-400);
+         }
+
+         .stat-value {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: var(--color-gray-800);
+            margin-bottom: 1rem;
+         }
+
+         .progress-bar {
+            height: 0.5rem;
+            width: 100%;
+            border-radius: 1rem;
+            background-color: var(--color-gray-200);
+            overflow: hidden;
+         }
+
+         .progress-fill {
+            height: 100%;
+            border-radius: 1rem;
+            background: linear-gradient(to right, var(--color-black), var(--color-gray-600));
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: width 1s ease-in-out;
+         }
+
+         .chart-container {
+            grid-column: 1 / -1;
+            border-radius: 1.25rem;
+            border: 1px solid var(--color-gray-200);
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            background-color: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            margin-top: 1.5rem;
+            animation: fadeInUp 0.8s ease-out both;
+         }
+
+         .chart-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--color-gray-800);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+         }
+
+         @keyframes fadeIn {
+            from {
+               opacity: 0;
+            }
+            to {
+               opacity: 1;
+            }
+         }
+
+         @keyframes fadeInUp {
+            from {
+               opacity: 0;
+               transform: translateY(20px);
+            }
+            to {
+               opacity: 1;
+               transform: translateY(0);
+            }
+         }
+
+         /* Selection styles */
+         ::selection {
+            background-color: var(--color-black);
+            color: var(--color-white);
+         }
+      </style>
+   </head>
+   <body>
+      <nav>
+         <div class="nav-logo">PH</div>
+         <div class="nav-links">
+            <a href="/" class="nav-link">
+               <i data-lucide="cpu" style="width: 1.25rem; height: 1.25rem"></i>
+               <span>Dashboard</span>
+            </a>
+            <a href="/statistics" class="nav-link active">
+               <i data-lucide="bar-chart-3" style="width: 1.25rem; height: 1.25rem"></i>
+               <span>Statistics</span>
+            </a>
+            <a href="/logs" class="nav-link">
+               <i data-lucide="database" style="width: 1.25rem; height: 1.25rem"></i>
+               <span>Logs</span>
+            </a>
+            <a href="/logout" class="nav-link">
+               <i data-lucide="log-out" style="width: 1.25rem; height: 1.25rem"></i>
+               <span>Logout</span>
+            </a>
+         </div>
+      </nav>
+
+      <main>
+         <header>
+            <h1>Info Dashboard</h1>
+            <p class="subtitle">Last 14 Days Performance Metrics</p>
+         </header>
+
+         <section>
+            <div class="grid-bg" aria-hidden="true"></div>
+
+            <div class="stats-grid">
+               <article class="stat-card">
+                  <div class="stat-header">
+                     <span class="stat-title">Total Logs</span>
+                     <i data-lucide="database" class="stat-icon"></i>
+                  </div>
+                  <div class="stat-value">{{ total_logs }}</div>
+                  <div class="progress-bar">
+                     <div
+                        class="progress-fill"
+                        style="width: {% if total_logs > 0 %}100{% else %}0{% endif %}%"
+                     ></div>
+                  </div>
+               </article>
+
+               <article class="stat-card">
+                  <div class="stat-header">
+                     <span class="stat-title">Unique IPs</span>
+                     <i data-lucide="globe" class="stat-icon"></i>
+                  </div>
+                  <div class="stat-value">{{ unique_ips }}</div>
+                  <div class="progress-bar">
+                     <div
+                        class="progress-fill"
+                        style="width: {% if unique_ips > 0 %}100{% else %}0{% endif %}%"
+                     ></div>
+                  </div>
+               </article>
+
+               <article class="stat-card">
+                  <div class="stat-header">
+                     <span class="stat-title">Daily Average</span>
+                     <i data-lucide="trending-up" class="stat-icon"></i>
+                  </div>
+                  <div class="stat-value">
+                     {% if total_logs > 0 %}{{ (total_logs / 14)|round(1) }}{% else %}0{% endif %}
+                  </div>
+                  <div class="progress-bar">
+                     <div
+                        class="progress-fill"
+                        style="width: {% if total_logs > 0 %}100{% else %}0{% endif %}%"
+                     ></div>
+                  </div>
+               </article>
+
+               <div class="chart-container">
+                  <h3 class="chart-title">
+                     <i data-lucide="bar-chart" style="width: 1.5rem; height: 1.5rem"></i>
+                     Upload Activity (Last 7 Days)
+                  </h3>
+                  <canvas id="uploadChart" height="100"></canvas>
+               </div>
+            </div>
+         </section>
+      </main>
+
+      <script>
+         lucide.createIcons();
+
+         document.addEventListener('DOMContentLoaded', function() {
+             const ctx = document.getElementById('uploadChart').getContext('2d');
+             const chartData = {
+                 labels: {{ chart_data.labels | tojson }},
+                 datasets: [{
+                     label: 'Uploads',
+                     data: {{ chart_data.data | tojson }},
+                     backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                     borderColor: 'rgba(0, 0, 0, 1)',
+                     borderWidth: 2,
+                     borderRadius: 5,
+                     borderSkipped: false,
+                 }]
+             };
+
+             const config = {
+                 type: 'bar',
+                 data: chartData,
+                 options: {
+                     responsive: true,
+                     plugins: {
+                         legend: {
+                             display: false
+                         },
+                         tooltip: {
+                             backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                             titleColor: '#fff',
+                             bodyColor: '#fff',
+                             borderColor: 'rgba(255, 255, 255, 0.1)',
+                             borderWidth: 1,
+                             padding: 10,
+                             cornerRadius: 8
+                         }
+                     },
+                     scales: {
+                         y: {
+                             beginAtZero: true,
+                             grid: {
+                                 color: 'rgba(0, 0, 0, 0.05)'
+                             },
+                             ticks: {
+                                 color: '#6b7280'
+                             }
+                         },
+                         x: {
+                             grid: {
+                                 display: false
+                             },
+                             ticks: {
+                                 color: '#6b7280'
+                             }
+                         }
+                     }
+                 }
+             };
+
+             new Chart(ctx, config);
+
+             document.querySelectorAll('.progress-fill').forEach(bar => {
+                 const width = bar.style.width;
+                 bar.style.width = '0';
+                 setTimeout(() => {
+                     bar.style.width = width;
+                 }, 500);
+             });
+         });
+      </script>
+   </body>
+</html>

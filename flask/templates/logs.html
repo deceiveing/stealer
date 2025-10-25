@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Phantom Logs</title>
+      <link
+         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+         rel="stylesheet"
+      />
+      <script src="https://unpkg.com/lucide@latest"></script>
+      <style>
+         :root {
+            --color-gray-50: #f9fafb;
+            --color-gray-100: #f3f4f6;
+            --color-gray-200: #e5e7eb;
+            --color-gray-300: #d1d5db;
+            --color-gray-400: #9ca3af;
+            --color-gray-500: #6b7280;
+            --color-gray-600: #4b5563;
+            --color-gray-700: #374151;
+            --color-gray-800: #1f2937;
+            --color-gray-900: #111827;
+            --color-black: #000000;
+            --color-white: #ffffff;
+         }
+
+         * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+         }
+
+         body {
+            font-family: "Inter", sans-serif;
+            font-weight: 300;
+            background: linear-gradient(
+               135deg,
+               var(--color-white) 0%,
+               var(--color-gray-50) 50%,
+               var(--color-gray-100) 100%
+            );
+            color: var(--color-black);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+         }
+
+         /* Navigation */
+         nav {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--color-gray-200);
+            backdrop-filter: blur(12px);
+            background-color: rgba(255, 255, 255, 0.7);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+         }
+
+         @media (min-width: 1024px) {
+            nav {
+               padding: 1rem 3rem;
+            }
+         }
+
+         .nav-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            background: linear-gradient(to right, var(--color-black), var(--color-gray-700));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+         }
+
+         .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.875rem;
+         }
+
+         @media (min-width: 1024px) {
+            .nav-links {
+               gap: 2rem;
+               font-size: 1rem;
+            }
+         }
+
+         .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+            color: var(--color-gray-600);
+            text-decoration: none;
+            padding: 0.5rem 0;
+            position: relative;
+         }
+
+         .nav-link:hover {
+            color: var(--color-gray-900);
+         }
+
+         .nav-link.active {
+            color: var(--color-black);
+            font-weight: 500;
+         }
+
+         .nav-link.active::after {
+            content: "";
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(to right, var(--color-black), var(--color-gray-700));
+            border-radius: 2px;
+         }
+
+         /* Main content */
+         main {
+            margin-left: auto;
+            margin-right: auto;
+            width: 92%;
+            max-width: 72rem;
+            padding: 2.5rem 0;
+         }
+
+         @media (min-width: 1024px) {
+            main {
+               padding: 3.5rem 0;
+            }
+         }
+
+         /* Header */
+         header {
+            position: relative;
+            text-align: center;
+            margin-bottom: 3.5rem;
+         }
+
+         h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            background: linear-gradient(to right, var(--color-black), var(--color-gray-700));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: fadeIn 0.8s ease-out;
+            margin-bottom: 0.5rem;
+         }
+
+         @media (min-width: 1024px) {
+            h1 {
+               font-size: 3.75rem;
+            }
+         }
+
+         .subtitle {
+            color: var(--color-gray-500);
+            animation: fadeIn 0.9s 0.1s ease-out both;
+         }
+
+         /* Section */
+         section {
+            position: relative;
+         }
+
+         .grid-bg {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background-image: repeating-linear-gradient(
+                  0deg,
+                  rgba(0, 0, 0, 0.03) 0 1px,
+                  transparent 1px 40px
+               ),
+               repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.03) 0 1px, transparent 1px 40px);
+            mask-image: radial-gradient(
+               ellipse at center,
+               rgba(255, 255, 255, 1) 45%,
+               rgba(255, 255, 255, 0) 100%
+            );
+         }
+
+         .logs-container {
+            position: relative;
+            border-radius: 1.25rem;
+            border: 1px solid var(--color-gray-200);
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            background-color: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            overflow: hidden;
+            animation: fadeInUp 0.6s ease-out both;
+         }
+
+         .logs-header {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            padding: 1rem 1.5rem;
+            background-color: rgba(0, 0, 0, 0.03);
+            border-bottom: 1px solid var(--color-gray-200);
+            font-weight: 600;
+            color: var(--color-gray-700);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+         }
+
+         .log-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--color-gray-100);
+            transition: all 0.2s;
+         }
+
+         .log-row:last-child {
+            border-bottom: none;
+         }
+
+         .log-row:hover {
+            background-color: rgba(0, 0, 0, 0.02);
+         }
+
+         .log-name {
+            font-weight: 500;
+            color: var(--color-gray-800);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+         }
+
+         .log-ip {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--color-gray-600);
+         }
+
+         .flag-icon {
+            width: 1.25rem;
+            height: 1rem;
+            border-radius: 0.125rem;
+            box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+            object-fit: cover;
+         }
+
+         .log-size {
+            color: var(--color-gray-500);
+         }
+
+         .log-date {
+            color: var(--color-gray-500);
+            font-size: 0.875rem;
+         }
+
+         .log-action a {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-radius: 0.75rem;
+            background-color: var(--color-black);
+            color: var(--color-white);
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0.5rem 1rem;
+            transition: all 0.2s;
+            text-decoration: none;
+         }
+
+         .log-action a:hover {
+            background-color: var(--color-gray-800);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+         }
+
+         .empty-state {
+            padding: 3rem;
+            text-align: center;
+            color: var(--color-gray-400);
+            grid-column: 1 / -1;
+         }
+
+         .empty-state i {
+            margin-bottom: 1rem;
+            opacity: 0.5;
+         }
+
+         .empty-state p {
+            margin-top: 0.5rem;
+         }
+
+         /* Animations */
+         @keyframes fadeIn {
+            from {
+               opacity: 0;
+            }
+            to {
+               opacity: 1;
+            }
+         }
+
+         @keyframes fadeInUp {
+            from {
+               opacity: 0;
+               transform: translateY(20px);
+            }
+            to {
+               opacity: 1;
+               transform: translateY(0);
+            }
+         }
+
+         ::selection {
+            background-color: var(--color-black);
+            color: var(--color-white);
+         }
+
+         @media (max-width: 768px) {
+            .logs-header {
+               display: none;
+            }
+
+            .log-row {
+               grid-template-columns: 1fr;
+               gap: 0.5rem;
+               padding: 1rem;
+            }
+
+            .log-action {
+               margin-top: 0.5rem;
+            }
+         }
+      </style>
+   </head>
+   <body>
+      <nav>
+         <div class="nav-logo">PH</div>
+         <div class="nav-links">
+            <a href="/" class="nav-link">
+               <i data-lucide="cpu" style="width: 1.25rem; height: 1.25rem"></i>
+               <span>Dashboard</span>
+            </a>
+            <a href="/statistics" class="nav-link">
+               <i data-lucide="bar-chart-3" style="width: 1.25rem; height: 1.25rem"></i>
+               <span>Statistics</span>
+            </a>
+            <a href="/logs" class="nav-link active">
+               <i data-lucide="database" style="width: 1.25rem; height: 1.25rem"></i>
+               <span>Logs</span>
+            </a>
+            <a href="/logout" class="nav-link">
+               <i data-lucide="log-out" style="width: 1.25rem; height: 1.25rem"></i>
+               <span>Logout</span>
+            </a>
+         </div>
+      </nav>
+
+      <main>
+         <header>
+            <h1>Logs</h1>
+            <p class="subtitle">All collected data</p>
+         </header>
+
+         <section>
+            <div class="grid-bg" aria-hidden="true"></div>
+
+            <div class="logs-container">
+               <div class="logs-header">
+                  <div>File Name</div>
+                  <div>IP Address</div>
+                  <div>Size</div>
+                  <div>Date</div>
+               </div>
+
+               {% for file in files %}
+               <div class="log-row">
+                  <div class="log-name">
+                     <i data-lucide="archive" style="width: 1.25rem; height: 1.25rem"></i>
+                     <span>{{ file.name }}</span>
+                  </div>
+                  <div class="log-ip">
+                     {% if file.ip in ip_to_country %}
+                     <img
+                        src="https://flagcdn.com/{{ ip_to_country[file.ip] }}.svg"
+                        class="flag-icon"
+                        alt="Flag"
+                     />
+                     {% endif %}
+                     <span>{{ file.ip }}</span>
+                  </div>
+                  <div class="log-size">{{ file.size }}</div>
+                  <div class="log-date">{{ file.date }}</div>
+                  <div class="log-action">
+                     <a href="/download/{{ file.id }}">
+                        <i data-lucide="download" style="width: 1rem; height: 1rem"></i>
+                        <span>Download</span>
+                     </a>
+                  </div>
+               </div>
+               {% else %}
+               <div class="empty-state">
+                  <i data-lucide="inbox" style="width: 3rem; height: 3rem"></i>
+                  <h3>No logs yet</h3>
+                  <p>Uploaded files will appear here</p>
+               </div>
+               {% endfor %}
+            </div>
+         </section>
+      </main>
+
+      <script>
+         lucide.createIcons();
+      </script>
+   </body>
+</html>
